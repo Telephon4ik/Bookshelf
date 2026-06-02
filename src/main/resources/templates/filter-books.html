@@ -1,0 +1,98 @@
+<!--
+  ============================================================================
+  FILE: filter-books.html
+  DESCRIPTION: Страница фильтрации книг по различным критериям
+  FEATURES: Фильтр по статусу, жанру, диапазону рейтинга
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фильтр книг - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- Хлебные крошки / Навигация -->
+<div class="top-bar">
+    <a th:href="${returnUrl}" class="back-link">
+        <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+        <span>Назад к книгам</span>
+    </a>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container" style="max-width: 600px;">
+    <div class="page-header">
+        <h1><img src="/icons/search/icon-filter-funnel.png" alt="Фильтр"> Фильтр книг</h1>
+    </div>
+
+    <!-- Карточка формы фильтрации -->
+    <div class="form-card">
+        <!-- Форма применения фильтра -->
+        <form th:action="@{/books}" method="get">
+            <!-- Выбор статуса -->
+            <div class="form-group">
+                <label>Статус</label>
+                <select name="status" class="styled-select">
+                    <option value="">Все статусы</option>
+                    <option th:each="status : ${statuses}"
+                            th:value="${status}"
+                            th:text="${status.displayName}"
+                            th:selected="${selectedStatus != null and selectedStatus == status}"></option>
+                </select>
+            </div>
+
+            <!-- Выбор жанра -->
+            <div class="form-group">
+                <label>Жанр</label>
+                <select name="genre" class="styled-select">
+                    <option value="">Все жанры</option>
+                    <option th:each="genre : ${genres}"
+                            th:value="${genre}"
+                            th:text="${genre}"
+                            th:selected="${selectedGenre != null and selectedGenre == genre}"></option>
+                </select>
+            </div>
+
+            <!-- Диапазон рейтинга -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Рейтинг от</label>
+                    <input type="number" name="minRating" min="1" max="5"
+                           th:value="${selectedMinRating}" placeholder="1" class="styled-input">
+                </div>
+                <div class="form-group">
+                    <label>Рейтинг до</label>
+                    <input type="number" name="maxRating" min="1" max="5"
+                           th:value="${selectedMaxRating}" placeholder="5" class="styled-input">
+                </div>
+            </div>
+
+            <!-- Скрытые параметры пагинации и сортировки -->
+            <input type="hidden" name="page" value="0">
+            <input type="hidden" name="size" th:value="${currentPageSize != null ? currentPageSize : 20}">
+            <input type="hidden" name="sort" th:value="${currentSort}">
+
+            <button type="submit" class="btn-apply">
+                <img src="/icons/search/icon-filter-funnel-2.png" alt="Применить"> Применить фильтр
+            </button>
+        </form>
+
+        <!-- Форма сброса фильтров -->
+        <form th:action="@{/books}" method="get" style="margin-top: 16px;">
+            <input type="hidden" name="size" th:value="${currentPageSize != null ? currentPageSize : 20}">
+            <input type="hidden" name="sort" th:value="${currentSort}">
+            <input type="hidden" name="page" value="0">
+            <button type="submit" class="btn-reset">
+                <img src="/icons/action/icon-close-cross-2.png" alt="Сбросить"> Сбросить фильтры
+            </button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!--
+  ============================================================================
+  FILE: statistics.html
+  DESCRIPTION: Страница со статистикой чтения
+  FEATURES: Статистика по месяцам, жанрам, тегам, непрочитанным книгам
+  DEPENDENCIES: styles.css, Chart.js, custom-stats.js
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo-area"><span class="app-title">Bookshelf</span></div>
+    <div class="nav-links">
+        <a href="/" class="nav-link"><img src="/icons/nav/icon-library.png" alt="Главная"><span>Главная</span></a>
+        <a href="/books" class="nav-link"><img src="/icons/nav/icon-books-list.png" alt="Книги"><span>Книги</span></a>
+        <a href="/shelves" class="nav-link"><img src="/icons/misc/icon-shelf-empty.png" alt="Полки"><span>Полки</span></a>
+        <a href="/stats" class="nav-link active"><img src="/icons/nav/icon-stats-chart.png" alt="Статистика"><span>Статистика</span></a>
+        <a href="/reports/unread" class="nav-link"><img src="/icons/nav/icon-report.png" alt="Отчёты"><span>Отчёты</span></a>
+    </div>
+    <div></div>
+</div>
+
+<div class="container">
+    <div class="page-header stats-header">
+        <h1><img src="/icons/nav/icon-stats-chart.png" alt="Статистика"> Статистика чтения</h1>
+    </div>
+
+    <div class="stats-grid">
+        <div class="card stats-card">
+            <h3><img src="/icons/misc/icon-calendar-day.png" alt="Месяц"> Текущий месяц</h3>
+            <p class="stat-value" th:text="${pagesThisMonth}">0</p>
+            <p class="stat-label">прочитано страниц</p>
+            <p class="completed-books" th:text="${booksThisMonth}">0</p>
+            <p class="completed-label">завершено книг</p>
+        </div>
+
+        <!-- Карточка с графиком по месяцам -->
+        <div class="card chart-card">
+            <div class="chart-header">
+                <h3><img src="/icons/nav/icon-stats-chart.png" alt="График"> Книг по месяцам</h3>
+                <div class="year-selector">
+                    <button type="button" id="prevYear" class="year-nav" title="Предыдущий год">
+                        <img src="/icons/action/icon-back-arrow.png" alt="◀">
+                    </button>
+                    <select id="yearSelect" class="year-dropdown">
+                        <option th:each="year : ${availableYears}"
+                                th:value="${year}"
+                                th:text="${year}"
+                                th:selected="${year == currentYear}"></option>
+                    </select>
+                    <button type="button" id="nextYear" class="year-nav" title="Следующий год">
+                        <img src="/icons/action/icon-forward-arrow.png" alt="▶">
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+            <div class="chart-stats" id="chartStats">
+                <div class="chart-stat">
+                    <span class="chart-stat-label">Всего книг за год:</span>
+                    <span class="chart-stat-value" id="totalBooksYear">0</span>
+                </div>
+                <div class="chart-stat">
+                    <span class="chart-stat-label">В среднем в месяц:</span>
+                    <span class="chart-stat-value" id="avgPerMonth">0</span>
+                </div>
+                <div class="chart-stat">
+                    <span class="chart-stat-label">Лучший месяц:</span>
+                    <span class="chart-stat-value" id="bestMonth">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Новая карточка с круговой диаграммой жанров -->
+        <div class="card pie-card">
+            <div class="chart-header">
+                <h3><img src="/icons/misc/icon-tag-label.png" alt="Жанры"> Распределение по жанрам</h3>
+                <div class="pie-legend-toggle">
+                    <button type="button" id="toggleLegend" class="legend-toggle-btn" title="Показать/скрыть легенду">
+                        <img src="/icons/action/icon-view-eye.png" alt="Легенда">
+                    </button>
+                </div>
+            </div>
+            <div class="pie-container">
+                <canvas id="genrePieChart"></canvas>
+            </div>
+            <div class="pie-legend" id="pieLegend">
+                <!-- Легенда будет заполнена динамически -->
+            </div>
+            <div class="pie-summary" id="pieSummary">
+                <div class="pie-stat">
+                    <span class="pie-stat-label">Всего жанров:</span>
+                    <span class="pie-stat-value" id="totalGenres">0</span>
+                </div>
+                <div class="pie-stat">
+                    <span class="pie-stat-label">Книг всего:</span>
+                    <span class="pie-stat-value" id="totalGenreBooks">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><img src="/icons/misc/icon-tag-label.png" alt="Теги"> Популярные теги</h3>
+            <div th:each="entry : ${tagStats}" class="tag-item">
+                <span class="tag-name" th:text="${entry.key}"></span>
+                <span class="tag-count" th:text="${entry.value}"></span>
+            </div>
+            <div th:if="${tagStats.empty}">Нет тегов</div>
+        </div>
+
+        <div class="card">
+            <h3><img src="/icons/status/icon-status-planned.png" alt="Не прочитано"> Непрочитанные книги</h3>
+            <div class="unread-list">
+                <div th:each="book : ${unreadBooks}" class="unread-item">
+                    <div class="unread-title" th:text="${book.title}"></div>
+                    <div class="unread-author" th:text="${book.author}"></div>
+                </div>
+                <div th:if="${unreadBooks.empty}" class="empty-unread">
+                    <img src="/icons/status/icon-status-read.png" alt="Все прочитано">
+                    <p>Все книги прочитаны</p>
+                </div>
+            </div>
+            <p class="mt-16">Всего: <strong th:text="${unreadBooks.size()}">0</strong></p>
+        </div>
+    </div>
+
+    <div class="add-stats-form stats-add-form">
+        <h3><img src="/icons/action/icon-book-add.png" alt="Добавить" class="stats-add-icon"> Добавить данные о чтении</h3>
+        <form th:action="@{/stats/add}" method="post">
+            <div class="form-group"><label>Дата</label><input type="date" name="date" required></div>
+            <div class="form-group"><label>Прочитано страниц</label><input type="number" name="pagesRead" required min="0"></div>
+            <div class="form-group"><label>Завершено книг</label><input type="number" name="booksCompleted" required min="0"></div>
+            <button type="submit" class="btn-submit">Добавить</button>
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/custom-stats.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!--
+  ============================================================================
+  FILE: add-book.html
+  DESCRIPTION: Страница добавления новой книги в библиотеку
+  FEATURES: Форма с полями для ввода информации о книге, виджет рейтинга,
+            альтернативные способы добавления (сканирование ISBN, поиск в API)
+  DEPENDENCIES: styles.css, star-rating.js
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить книгу - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="/books" class="back-link">
+        <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+        <span>Назад к книгам</span>
+    </a>
+</div>
+
+<div class="container add-edit-container">
+    <div class="page-header">
+        <h1><img src="/icons/action/icon-book-add-2.png" alt="Добавить"> Добавить книгу</h1>
+    </div>
+
+    <div class="form-card compact-form">
+        <div th:if="${error}" class="error-message">
+            <img src="/icons/alerts/icon-error-cross.png" alt="Ошибка">
+            <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/books/add}" th:object="${book}" method="post" id="bookForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" th:field="*{title}" required maxlength="200" placeholder="Введите название">
+                </div>
+                <div class="form-group">
+                    <label>Автор *</label>
+                    <input type="text" th:field="*{author}" required maxlength="100" placeholder="ФИО автора">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Жанр</label>
+                    <input type="text" th:field="*{genre}" maxlength="50" placeholder="Например: Фантастика">
+                </div>
+                <div class="form-group">
+                    <label>ISBN</label>
+                    <input type="text" th:field="*{isbn}" placeholder="978-5-699-12014-7">
+                    <div class="help-text">10 или 13 цифр, можно с дефисами</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Тип книги</label>
+                    <select th:field="*{type}" class="styled-select">
+                        <option th:each="type : ${T(com.bookshelf.model.BookType).values()}"
+                                th:value="${type}"
+                                th:text="${type.displayName}">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Формат</label>
+                    <input type="text" th:field="*{format}" placeholder="PDF, EPUB, MP3">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select th:field="*{status}" class="styled-select">
+                        <option th:each="status : ${T(com.bookshelf.model.BookStatus).values()}"
+                                th:value="${status}"
+                                th:text="${status.displayName}">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Количество страниц</label>
+                    <input type="number" th:field="*{pageCount}" min="0" placeholder="0">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Рейтинг</label>
+                    <div class="rating-container">
+                        <div class="star-rating-widget" id="starRatingWidget">
+                            <span class="star" data-star="1"><img src="/icons/rating/icon-star-empty.png" alt="1"></span>
+                            <span class="star" data-star="2"><img src="/icons/rating/icon-star-empty.png" alt="2"></span>
+                            <span class="star" data-star="3"><img src="/icons/rating/icon-star-empty.png" alt="3"></span>
+                            <span class="star" data-star="4"><img src="/icons/rating/icon-star-empty.png" alt="4"></span>
+                            <span class="star" data-star="5"><img src="/icons/rating/icon-star-empty.png" alt="5"></span>
+                        </div>
+                        <div class="rating-info">
+                            <span id="ratingText">Не оценено</span>
+                            <button type="button" class="clear-rating" id="clearRating">✖ Очистить</button>
+                        </div>
+                    </div>
+                    <input type="hidden" th:field="*{rating}" id="ratingInput" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>URL обложки</label>
+                    <input type="text" th:field="*{coverUrl}" placeholder="https://...">
+                    <div class="help-text">Ссылка на изображение обложки (необязательно)</div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Теги (через запятую)</label>
+                <input type="text" name="tagsInput" placeholder="Фантастика, Классика, Для работы">
+                <div class="help-text">Теги помогут организовать книги на виртуальных полках</div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Рецензия</label>
+                <textarea th:field="*{review}" rows="2" maxlength="2000" placeholder="Ваши впечатления о книге..."></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Описание</label>
+                <textarea th:field="*{description}" rows="3" maxlength="5000" placeholder="Краткое описание книги..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <img src="/icons/action/icon-book-add.png" alt="Сохранить"> Сохранить книгу
+            </button>
+        </form>
+
+        <!-- Альтернативные способы добавления книг -->
+        <div class="alternative-section">
+            <div class="alternative-title">— Или добавьте книгу через —</div>
+            <div class="alternative-buttons">
+                <a href="/scan-isbn" class="alt-btn">
+                    <img src="/icons/action/icon-scan-barcode.png" alt="Сканер">
+                    <span>Сканирование ISBN</span>
+                </a>
+                <a href="/search-google" class="alt-btn">
+                    <img src="/icons/search/icon-google-books.png" alt="Google Books">
+                    <span>Поиск в Google Books</span>
+                </a>
+                <a href="/search-openlibrary" class="alt-btn">
+                    <img src="/icons/search/icon-openlibrary.png" alt="Open Library">
+                    <span>Поиск в Open Library</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/star-rating.js}"></script>
+
+</body>
+</html>

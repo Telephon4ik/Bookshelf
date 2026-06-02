@@ -1,0 +1,94 @@
+<!--
+  ============================================================================
+  FILE: scan-isbn.html
+  DESCRIPTION: Страница сканирования ISBN с помощью камеры устройства
+  FEATURES: Интеграция с QuaggaJS для сканирования штрих-кодов, выбор API
+  DEPENDENCIES: isbn-scanner.js, styles.css, QuaggaJS (CDN)
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Сканировать ISBN камерой - Bookshelf</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="/books/add" class="back-link">
+    <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+    <span>Назад к добавлению книги</span>
+  </a>
+</div>
+
+<div class="container">
+  <div class="page-header">
+    <h1>
+      <img src="/icons/action/icon-scan-barcode.png" alt="Сканер">
+      Сканировать ISBN камерой
+    </h1>
+  </div>
+
+  <div th:if="${error}" class="error-message">
+    <img src="/icons/alerts/icon-error-cross.png" alt="Ошибка">
+    <span th:text="${error}"></span>
+  </div>
+
+  <div class="scanner-container" id="scannerContainer">
+    <div id="interactive" class="viewport"></div>
+    <div id="scanLine" class="scan-line scan-line-hidden"></div>
+  </div>
+
+  <div class="controls scanner-controls">
+    <button type="button" id="startScanner" class="btn-primary">
+      <img src="/icons/action/icon-camera.png" alt="Камера">
+      Запустить камеру
+    </button>
+    <button type="button" id="stopScanner" class="btn-secondary" disabled>
+      <img src="/icons/action/icon-stop.png" alt="Стоп">
+      Остановить камеру
+    </button>
+  </div>
+
+  <div id="statusText" class="status-text"></div>
+
+  <div class="manual-input">
+    <div class="scanner-manual-title">
+      Введите ISBN вручную или отсканируйте камерой
+    </div>
+
+    <div class="manual-input-group">
+      <input type="text" id="manualIsbn" placeholder="978-5-699-12014-7" autocomplete="off">
+    </div>
+
+    <div class="api-toggle">
+      <button type="button" id="apiOpenLibrary" class="api-option active" data-api="openlibrary">
+        <img src="/icons/search/icon-openlibrary.png" alt="Open Library">
+        Open Library
+      </button>
+      <button type="button" id="apiGoogle" class="api-option" data-api="google">
+        <img src="/icons/search/icon-google-books.png" alt="Google Books">
+        Google Books
+      </button>
+    </div>
+
+    <div class="search-button-group">
+      <button type="button" id="searchBtn" class="btn-primary">
+        <img src="/icons/metrics/icon-metric-total.png" alt="Найти книгу">
+        Найти книгу
+      </button>
+      <button type="button" id="clearBtn" class="btn-secondary">
+        <img src="/icons/action/icon-delete-bin.png" alt="Очистить">
+        Очистить
+      </button>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/isbn-scanner.js}"></script>
+
+</body>
+</html>

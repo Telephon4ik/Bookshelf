@@ -1,0 +1,131 @@
+<!--
+  ============================================================================
+  FILE: dashboard.html
+  DESCRIPTION: Главная страница (дашборд) с общей статистикой и последними книгами
+  FEATURES: Статистические карточки, список недавно добавленных книг
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Верхняя панель навигации -->
+<div class="top-bar">
+    <div class="logo-area"><span class="app-title">Bookshelf</span></div>
+    <div class="nav-links">
+        <a href="/" class="nav-link active"><img src="/icons/nav/icon-library.png" alt="Главная"><span>Главная</span></a>
+        <a href="/books" class="nav-link"><img src="/icons/nav/icon-books-list.png" alt="Книги"><span>Книги</span></a>
+        <a href="/shelves" class="nav-link"><img src="/icons/misc/icon-shelf-empty.png" alt="Полки"><span>Полки</span></a>
+        <a href="/stats" class="nav-link"><img src="/icons/nav/icon-stats-chart.png" alt="Статистика"><span>Статистика</span></a>
+        <a href="/reports/unread" class="nav-link"><img src="/icons/nav/icon-report.png" alt="Отчёты"><span>Отчёты</span></a>
+    </div>
+    <div></div>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container">
+    <!-- Заголовок и кнопка добавления -->
+    <div class="page-header">
+        <h1>Моя библиотека</h1>
+        <a href="/books/add" class="btn-primary"><img src="/icons/action/icon-book-add.png" alt="Добавить">Добавить книгу</a>
+    </div>
+
+    <!-- Статистические карточки -->
+    <div class="stats-grid">
+        <!-- Карточка: Всего книг -->
+        <div class="stat-card">
+            <div class="stat-icon"><img src="/icons/metrics/icon-metric-total.png" alt="Всего книг"></div>
+            <div class="stat-info">
+                <h3>Всего книг</h3>
+                <div class="stat-number" th:text="${stats.totalBooks}">0</div>
+            </div>
+        </div>
+        <!-- Карточка: Прочитано книг -->
+        <div class="stat-card">
+            <div class="stat-icon"><img src="/icons/metrics/icon-metric-pages.png" alt="Прочитано"></div>
+            <div class="stat-info">
+                <h3>Прочитано</h3>
+                <div class="stat-number" th:text="${stats.readBooks}">0</div>
+            </div>
+        </div>
+        <!-- Карточка: Средний рейтинг -->
+        <div class="stat-card">
+            <div class="stat-icon"><img src="/icons/metrics/icon-metric-rating.png" alt="Рейтинг"></div>
+            <div class="stat-info">
+                <h3>Средний рейтинг</h3>
+                <div class="stat-number" th:text="${#numbers.formatDecimal(stats.avgRating, 1, 1)}">0.0</div>
+            </div>
+        </div>
+        <!-- Карточка: В планах -->
+        <div class="stat-card">
+            <div class="stat-icon"><img src="/icons/metrics/icon-metric-progress.png" alt="Прогресс"></div>
+            <div class="stat-info">
+                <h3>В планах</h3>
+                <div class="stat-number" th:text="${stats.wantToRead}">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция недавно добавленных книг -->
+    <div class="section-title"><img src="/icons/misc/icon-calendar-day.png" alt="Недавние"><span>Недавно добавленные</span></div>
+
+    <!-- Сетка с книгами -->
+    <div class="books-grid" th:if="${not #lists.isEmpty(recentBooks)}">
+        <div class="book-card" th:each="book : ${recentBooks}">
+            <!-- Обложка книги -->
+            <div class="book-cover">
+                <img th:if="${book.coverUrl != null}" th:src="${book.coverUrl}" alt="Обложка" class="dashboard-book-cover">
+                <img th:unless="${book.coverUrl != null}" src="/icons/misc/icon-cover-placeholder.png" alt="Нет обложки" class="dashboard-book-cover-placeholder-img">
+            </div>
+            <!-- Информация о книге -->
+            <div class="book-info">
+                <a th:href="@{/books/view/{id}(id=${book.id})}" class="book-title" th:text="${book.title}"></a>
+                <div class="book-author" th:text="${book.author}"></div>
+                <div class="book-meta">
+                    <!-- Статус книги -->
+                    <td>
+                        <span th:if="${book.status.name() == 'READ'}" class="status-badge status-read">
+                            <img src="/icons/status/icon-status-read.png" alt="Прочитано">
+                            <span th:text="${book.status.displayName}"></span>
+                        </span>
+                        <span th:if="${book.status.name() == 'WANT_TO_READ'}" class="status-badge status-planned">
+                            <img src="/icons/status/icon-status-planned.png" alt="В планах">
+                            <span th:text="${book.status.displayName}"></span>
+                        </span>
+                        <span th:if="${book.status.name() == 'IN_PROGRESS'}" class="status-badge status-progress">
+                            <img src="/icons/status/icon-status-progress.png" alt="В процессе">
+                            <span th:text="${book.status.displayName}"></span>
+                        </span>
+                    </td>
+                    <!-- Рейтинг книги -->
+                    <div th:if="${book.rating != null and book.rating > 0}" class="dashboard-rating-stars">
+                        <th:block th:each="i : ${#numbers.sequence(1, book.rating)}">
+                            <img src="/icons/rating/icon-star-filled.png" width="14" height="14" alt="★">
+                        </th:block>
+                        <th:block th:if="${book.rating % 1 != 0}">
+                            <img src="/icons/rating/icon-star-half.png" width="14" height="14" alt="½">
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Состояние "нет книг" -->
+    <div th:if="${#lists.isEmpty(recentBooks)}" class="empty-state">
+        <img src="/icons/misc/icon-shelf-empty.png" alt="Пустая полка">
+        <p>У вас пока нет книг. Начните с добавления первой!</p>
+        <a href="/books/add">+ Добавить книгу</a>
+    </div>
+</div>
+
+</body>
+</html>

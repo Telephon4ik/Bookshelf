@@ -1,0 +1,63 @@
+<!--
+  ============================================================================
+  FILE: shelves.html
+  DESCRIPTION: Страница со списком всех виртуальных полок (тегов)
+  FEATURES: Отображение всех тегов как полок с количеством книг
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Виртуальные полки - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- Верхняя панель навигации -->
+<div class="top-bar">
+    <div class="logo-area"><span class="app-title">Bookshelf</span></div>
+    <div class="nav-links">
+        <a href="/" class="nav-link"><img src="/icons/nav/icon-library.png" alt="Главная"><span>Главная</span></a>
+        <a href="/books" class="nav-link"><img src="/icons/nav/icon-books-list.png" alt="Книги"><span>Книги</span></a>
+        <a href="/shelves" class="nav-link active"><img src="/icons/misc/icon-shelf-empty.png" alt="Полки"><span>Полки</span></a>
+        <a href="/stats" class="nav-link"><img src="/icons/nav/icon-stats-chart.png" alt="Статистика"><span>Статистика</span></a>
+        <a href="/reports/unread" class="nav-link"><img src="/icons/nav/icon-report.png" alt="Отчёты"><span>Отчёты</span></a>
+    </div>
+    <div></div>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container">
+    <h1>Полки</h1>
+    <p class="subtitle">Организуйте книги по тегам — каждая полка создаётся автоматически</p>
+
+    <!-- Сетка полок -->
+    <div class="shelves-grid" th:if="${not #lists.isEmpty(shelves)}">
+        <!-- Карточка каждой полки -->
+        <a th:each="shelf : ${shelves}" th:href="@{/shelves/{name}(name=${shelf})}" class="shelf-card">
+            <div class="shelf-icon"><img src="/icons/misc/icon-tag-label.png" alt="Полка"></div>
+            <div class="shelf-info">
+                <div class="shelf-name" th:text="${shelf}"></div>
+                <div class="shelf-count" th:text="${shelfCounts.get(shelf)} + ' книг(и)'"></div>
+            </div>
+        </a>
+        <!-- Карточка для создания новой полки -->
+        <a href="/books/add" class="shelf-card add-shelf" style="cursor: pointer;">
+            <img src="/icons/action/icon-shelf-new.png" alt="Создать" width="24" height="24">
+            <span>Создать новую полку</span>
+        </a>
+    </div>
+
+    <!-- Состояние "нет полок" -->
+    <div th:if="${#lists.isEmpty(shelves)}" class="empty-shelves">
+        <img src="/icons/misc/icon-shelf-empty.png" alt="Пустая полка">
+        <p>У вас пока нет полок. Добавьте теги к книгам, и они автоматически появятся здесь!</p>
+        <a href="/books/add" class="btn-primary" style="display:inline-block; margin-top:16px;">+ Добавить книгу с тегом</a>
+    </div>
+</div>
+
+</body>
+</html>

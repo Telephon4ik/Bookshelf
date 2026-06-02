@@ -1,0 +1,48 @@
+<!--
+  ============================================================================
+  FILE: search-openlibrary.html
+  DESCRIPTION: Страница поиска книг через Open Library API
+  FEATURES: Форма поиска с запросом, интеграция с Open Library API
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск в Open Library - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- Хлебные крошки / Навигация -->
+<div class="top-bar">
+    <a href="/books/add" class="back-link">
+        <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+        <span>Назад к добавлению книги</span>
+    </a>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container" style="max-width: 600px;">
+    <div class="page-header">
+        <h1><img src="/icons/search/icon-openlibrary.png" alt="Open Library"> Поиск в Open Library</h1>
+    </div>
+
+    <!-- Карточка формы поиска -->
+    <div class="form-card">
+        <form th:action="@{/search-openlibrary}" method="post">
+            <div class="form-group">
+                <label>Поисковый запрос</label>
+                <input type="text" name="query" placeholder="Название книги, автор..." required>
+            </div>
+            <button type="submit" class="btn-search">
+                <img src="/icons/search/icon-search-magnifier.png" alt="Поиск"> Искать в Open Library
+            </button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

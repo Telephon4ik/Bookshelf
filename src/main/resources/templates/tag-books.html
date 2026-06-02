@@ -1,0 +1,69 @@
+<!--
+  ============================================================================
+  FILE: tag-books.html
+  DESCRIPTION: Страница отображения книг по конкретному тегу
+  FEATURES: Список книг, содержащих указанный тег
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книги по тегу - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- Верхняя панель навигации -->
+<div class="top-bar">
+    <div class="logo-area"><span class="app-title">Bookshelf</span></div>
+    <div class="nav-links">
+        <a href="/" class="nav-link"><img src="/icons/nav/icon-library.png" alt="Главная"><span>Главная</span></a>
+        <a href="/books" class="nav-link"><img src="/icons/nav/icon-books-list.png" alt="Книги"><span>Книги</span></a>
+        <a href="/shelves" class="nav-link active"><img src="/icons/misc/icon-shelf-empty.png" alt="Полки"><span>Полки</span></a>
+    </div>
+    <div></div>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container">
+    <!-- Ссылка возврата ко всем полкам -->
+    <a href="/shelves" class="back-link"><img src="/icons/action/icon-back-arrow.png" alt="Назад"><span>Все полки</span></a>
+
+    <!-- Заголовок с названием тега -->
+    <h1><img src="/icons/misc/icon-tag-label.png" alt="Тег"> Книги с тегом: <span th:text="${tag}" style="color:#8B5A2B;"></span></h1>
+
+    <!-- Таблица с книгами -->
+    <div class="books-table" th:if="${not #lists.isEmpty(books)}">
+        <table>
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Статус</th>
+                <th>Рейтинг</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td class="book-title"><a th:href="@{/books/view/{id}(id=${book.id})}" th:text="${book.title}"></a></td>
+                <td th:text="${book.author}"></td>
+                <td><span th:text="${book.status.displayName}"></span></td>
+                <td><span th:if="${book.rating}" th:text="'★ ' + ${book.rating}"></span><span th:unless="${book.rating}">-</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Состояние "нет книг с этим тегом" -->
+    <div th:if="${#lists.isEmpty(books)}" class="empty-state">
+        <img src="/icons/misc/icon-shelf-empty.png" alt="Нет книг">
+        <p>Нет книг с этим тегом</p>
+        <a href="/books/add" class="btn-primary">+ Добавить книгу с этим тегом</a>
+    </div>
+</div>
+
+</body>
+</html>

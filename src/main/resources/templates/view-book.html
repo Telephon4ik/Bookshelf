@@ -1,0 +1,153 @@
+<!--
+  ============================================================================
+  FILE: view-book.html
+  DESCRIPTION: Страница детального просмотра информации о книге
+  FEATURES: Полная информация о книге: обложка, метаданные, теги, рецензия
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр книги - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="/books" class="back-link">
+        <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+        <span>Назад к книгам</span>
+    </a>
+    <div class="action-buttons">
+        <a th:href="@{/books/edit/{id}(id=${book.id})}" class="action-btn edit">
+            <img src="/icons/action/icon-edit-pencil.png" alt="Редактировать"> Редактировать
+        </a>
+        <a th:href="@{/books/delete/{id}(id=${book.id})}" class="action-btn delete" onclick="return confirm('Удалить книгу?')">
+            <img src="/icons/action/icon-delete-bin.png" alt="Удалить"> Удалить
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="book-card details-card view-book">
+        <div class="book-header">
+            <div class="book-cover-wrapper">
+                <div th:if="${book.coverUrl != null and book.coverUrl != ''}">
+                    <img th:src="${book.coverUrl}" alt="Обложка" class="book-cover-large" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'book-cover-placeholder-large\'><img src=\'/icons/misc/icon-cover-placeholder.png\' alt=\'Нет обложки\'></div>'">
+                </div>
+                <div th:unless="${book.coverUrl != null and book.coverUrl != ''}" class="book-cover-placeholder-large">
+                    <img src="/icons/misc/icon-cover-placeholder.png" alt="Нет обложки">
+                </div>
+            </div>
+
+            <div class="book-info-wrapper">
+                <h1 class="book-title detail-title" th:text="${book.title}"></h1>
+                <div class="book-author detail-author" th:text="${book.author}"></div>
+                <!-- Статус с иконкой - только справа -->
+                <div>
+                    <span th:if="${book.status.name() == 'READ'}" class="status-badge status-read">
+                        <img src="/icons/status/icon-status-read.png" alt="Прочитано" width="16" height="16">
+                        <span th:text="${book.status.displayName}"></span>
+                    </span>
+                    <span th:if="${book.status.name() == 'WANT_TO_READ'}" class="status-badge status-planned">
+                        <img src="/icons/status/icon-status-planned.png" alt="В планах" width="16" height="16">
+                        <span th:text="${book.status.displayName}"></span>
+                    </span>
+                    <span th:if="${book.status.name() == 'IN_PROGRESS'}" class="status-badge status-progress">
+                        <img src="/icons/status/icon-status-progress.png" alt="В процессе" width="16" height="16">
+                        <span th:text="${book.status.displayName}"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="book-details-section">
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-icon"><img src="/icons/misc/icon-tag-label.png" alt="Жанр"></div>
+                    <div class="detail-label">Жанр</div>
+                    <div class="detail-value" th:text="${book.genre != null ? book.genre : '-'}"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon"><img src="/icons/action/icon-scan-barcode.png" alt="ISBN"></div>
+                    <div class="detail-label">ISBN</div>
+                    <div class="detail-value" th:text="${book.isbn != null ? book.isbn : '-'}"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <img th:if="${book.type.name() == 'PAPER'}" src="/icons/type/icon-type-paper.png" alt="Тип">
+                        <img th:if="${book.type.name() == 'ELECTRONIC'}" src="/icons/type/icon-type-electronic.png" alt="Тип">
+                        <img th:if="${book.type.name() == 'AUDIO'}" src="/icons/type/icon-type-audio.png" alt="Тип">
+                    </div>
+                    <div class="detail-label">Тип</div>
+                    <div class="detail-value" th:text="${book.type.displayName}"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon"><img src="/icons/metrics/icon-metric-pages.png" alt="Страниц"></div>
+                    <div class="detail-label">Страниц</div>
+                    <div class="detail-value" th:text="${book.pageCount != null ? book.pageCount : '-'}"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon"><img src="/icons/rating/icon-star-filled.png" alt="Рейтинг"></div>
+                    <div class="detail-label">Рейтинг</div>
+                    <div class="detail-value">
+                        <div th:if="${book.rating != null and book.rating > 0}" class="rating-stars-large">
+                            <th:block th:each="i : ${#numbers.sequence(1, book.rating)}">
+                                <img src="/icons/rating/icon-star-filled.png" width="20" height="20" alt="★">
+                            </th:block>
+                            <th:block th:if="${book.rating % 1 != 0}">
+                                <img src="/icons/rating/icon-star-half.png" width="20" height="20" alt="½">
+                            </th:block>
+                            <th:block th:each="i : ${#numbers.sequence(1, 5 - (book.rating % 1 == 0 ? book.rating : T(java.lang.Math).floor(book.rating) + 0.5))}">
+                                <img src="/icons/rating/icon-star-empty.png" width="20" height="20" alt="☆">
+                            </th:block>
+                            <span class="rating-value-large">
+                                <span th:if="${book.rating % 1 == 0}" th:text="${book.rating} + '.0'"></span>
+                                <span th:unless="${book.rating % 1 == 0}" th:text="${book.rating}"></span>
+                                /5
+                            </span>
+                        </div>
+                        <span th:unless="${book.rating != null and book.rating > 0}">-</span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon"><img src="/icons/misc/icon-calendar-day.png" alt="Дата"></div>
+                    <div class="detail-label">Добавлена</div>
+                    <div class="detail-value" th:text="${#temporals.format(book.addedDate, 'dd.MM.yyyy HH:mm')}"></div>
+                </div>
+                <div th:if="${book.format != null}" class="detail-item">
+                    <div class="detail-icon"><img src="/icons/misc/icon-tag-label.png" alt="Формат"></div>
+                    <div class="detail-label">Формат</div>
+                    <div class="detail-value" th:text="${book.format}"></div>
+                </div>
+            </div>
+
+            <div class="tags-section">
+                <div class="tags-title">
+                    <img src="/icons/misc/icon-tag-label.png" alt="Теги"> Теги
+                </div>
+                <div>
+                    <span th:each="tag : ${book.tags}" class="tag" th:text="${tag}"></span>
+                    <span th:if="${book.tags.empty}">-</span>
+                </div>
+            </div>
+
+            <div th:if="${book.review != null and !book.review.isEmpty()}" class="description">
+                <h3><img src="/icons/action/icon-review.png" alt="Рецензия" class="review-icon"> Рецензия</h3>
+                <p th:text="${book.review}"></p>
+            </div>
+
+            <div th:if="${book.description != null and !book.description.isEmpty()}" class="description">
+                <h3><img src="/icons/metrics/icon-metric-pages.png" alt="Описание" class="description-icon"> Описание</h3>
+                <p th:text="${book.description}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

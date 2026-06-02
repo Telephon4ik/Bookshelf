@@ -1,0 +1,69 @@
+<!--
+  ============================================================================
+  FILE: search-results.html
+  DESCRIPTION: Страница отображения результатов расширенного поиска в локальной библиотеке
+  FEATURES: Таблица с найденными книгами, ссылки на просмотр
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- Хлебные крошки / Навигация -->
+<div class="top-bar">
+    <a href="/books/add" class="back-link">
+        <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+        <span>Назад к добавлению книги</span>
+    </a>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container">
+    <h1><img src="/icons/search/icon-search-magnifier.png" alt="Поиск"> Результаты поиска</h1>
+
+    <!-- Заголовок с количеством найденных книг -->
+    <div class="results-header">
+        <div class="result-count">Найдено книг: <strong th:text="${results.size()}">0</strong></div>
+        <a href="/search" class="back-link"><img src="/icons/action/icon-back-arrow.png" alt="Назад"> Новый поиск</a>
+    </div>
+
+    <!-- Состояние "нет результатов" -->
+    <div th:if="${results.empty}" class="empty-state">
+        <img src="/icons/misc/icon-shelf-empty.png" alt="Не найдено">
+        <p>Книги не найдены. Попробуйте изменить параметры поиска.</p>
+    </div>
+
+    <!-- Таблица с результатами поиска -->
+    <div th:unless="${results.empty}" class="books-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Жанр</th>
+                <th>Статус</th>
+                <th>Рейтинг</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${results}">
+                <td class="book-title"><a th:href="@{/books/view/{id}(id=${book.id})}" th:text="${book.title}"></a></td>
+                <td th:text="${book.author}"></td>
+                <td th:text="${book.genre != null ? book.genre : '-'}"></td>
+                <td><span th:text="${book.status.displayName}"></span></td>
+                <td><span th:if="${book.rating}" th:text="'★ ' + ${book.rating}"></span><span th:unless="${book.rating}">-</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

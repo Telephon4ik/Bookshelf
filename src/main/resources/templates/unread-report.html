@@ -1,0 +1,243 @@
+<!--
+  ============================================================================
+  FILE: unread-report.html
+  DESCRIPTION: Страница отчёта о непрочитанных книгах
+  FEATURES: Общая статистика, список непрочитанных книг с действиями,
+            экспорт/импорт коллекции книг (JSON, CSV, Excel)
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчёт о нечитанных - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo-area"><span class="app-title">Bookshelf</span></div>
+    <div class="nav-links">
+        <a href="/" class="nav-link"><img src="/icons/nav/icon-library.png" alt="Главная"><span>Главная</span></a>
+        <a href="/books" class="nav-link"><img src="/icons/nav/icon-books-list.png" alt="Книги"><span>Книги</span></a>
+        <a href="/shelves" class="nav-link"><img src="/icons/misc/icon-shelf-empty.png" alt="Полки"><span>Полки</span></a>
+        <a href="/stats" class="nav-link"><img src="/icons/nav/icon-stats-chart.png" alt="Статистика"><span>Статистика</span></a>
+        <a href="/reports/unread" class="nav-link active"><img src="/icons/nav/icon-report.png" alt="Отчёты"><span>Отчёты</span></a>
+    </div>
+    <div></div>
+</div>
+
+<div class="container">
+    <div class="page-header" style="margin-bottom: 20px;">
+        <h1><img src="/icons/nav/icon-report.png" alt="Отчёт"> Отчёт о нечитанных книгах</h1>
+    </div>
+
+    <!-- Результаты импорта -->
+    <div th:if="${importSuccess != null}" class="summary" th:classappend="${importSuccess > 0 ? 'success' : 'warning'}" style="margin-bottom: 24px;">
+        <h3><img src="/icons/alerts/icon-success-check.png" alt="Импорт"> Результаты импорта</h3>
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-label">Успешно добавлено</div>
+                <div class="stat-value" style="color: #4CAF50;" th:text="${importSuccess}">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Пропущено (дубликаты)</div>
+                <div class="stat-value" style="color: #FF9800;" th:text="${importSkipped}">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Ошибок</div>
+                <div class="stat-value" style="color: #D84315;" th:text="${importErrors}">0</div>
+            </div>
+        </div>
+        <div th:if="${importSkipped > 0 and not #lists.isEmpty(skippedBooksList)}" style="margin-top: 16px;">
+            <details>
+                <summary style="cursor: pointer; color: #7A6A5A;">Показать пропущенные книги</summary>
+                <ul style="margin-top: 12px; padding-left: 20px;">
+                    <li th:each="book : ${skippedBooksList}" th:text="${book}" style="margin: 4px 0;"></li>
+                </ul>
+            </details>
+        </div>
+        <div th:if="${importErrors > 0 and not #lists.isEmpty(errorsList)}" style="margin-top: 16px;">
+            <details>
+                <summary style="cursor: pointer; color: #D84315;">Показать ошибки</summary>
+                <ul style="margin-top: 12px; padding-left: 20px;">
+                    <li th:each="error : ${errorsList}" th:text="${error}" style="margin: 4px 0; color: #D84315;"></li>
+                </ul>
+            </details>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="error-message">
+        <img src="/icons/alerts/icon-error-cross.png" alt="Ошибка">
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Сводка общей статистики -->
+    <div class="summary" th:classappend="${totalUnread > 0 ? 'warning' : 'success'}">
+        <h3><img src="/icons/metrics/icon-metric-total.png" alt="Статистика" width="20" height="20"> Общая статистика</h3>
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-label">Всего книг</div>
+                <div class="stat-value" th:text="${stats.totalBooks}">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Прочитано</div>
+                <div class="stat-value" th:text="${stats.readBooks}">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">В планах</div>
+                <div class="stat-value" th:text="${stats.wantToRead}">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Средний рейтинг</div>
+                <div class="stat-value" th:text="${#numbers.formatDecimal(stats.avgRating, 1, 1)}">0.0</div>
+            </div>
+        </div>
+
+        <!-- Прогресс-бар прочитанных книг -->
+        <div th:with="readPercent=${stats.totalBooks > 0 ? (stats.readBooks / stats.totalBooks) * 100 : 0}">
+            <div class="progress-bar">
+                <div class="progress-fill" th:style="'width: ' + ${readPercent} + '%;'" th:text="${#numbers.formatDecimal(readPercent, 1, 1)} + '%'"></div>
+            </div>
+        </div>
+
+        <div th:if="${totalUnread > 0}" class="warning-message" style="margin-top: 16px;">
+            <img src="/icons/alerts/icon-warning-triangle.png" alt="Предупреждение" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 6px;">
+            У вас есть <strong th:text="${totalUnread}"></strong> непрочитанных книг
+        </div>
+    </div>
+
+    <h2 style="margin-top: 32px;"><img src="/icons/status/icon-status-planned.png" alt="Книги" width="24" height="24"> Список нечитанных книг</h2>
+
+    <!-- Таблица непрочитанных книг -->
+    <div class="books-table unread-report" th:if="${not #lists.isEmpty(unreadBooks)}">
+        <table>
+            <thead>
+            <tr>
+                <th class="cover-column">Обложка</th>
+                <th>#</th>
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Жанр</th>
+                <th>Тип</th>
+                <th>Страниц</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book, iterStat : ${unreadBooks}">
+                <td class="cover-column" style="width: 50px;">
+                    <div th:if="${book.coverUrl != null and book.coverUrl != ''}">
+                        <img th:src="${book.coverUrl}" alt="Обложка" class="book-cover-report"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'book-cover-placeholder-report\'><img src=\'/icons/misc/icon-cover-placeholder.png\' alt=\'Нет обложки\'></div>'">
+                    </div>
+                    <div th:unless="${book.coverUrl != null and book.coverUrl != ''}" class="book-cover-placeholder-report">
+                        <img src="/icons/misc/icon-cover-placeholder.png" alt="Нет обложки">
+                    </div>
+                </td>
+                <td th:text="${iterStat.count}"></td>
+                <td class="book-title">
+                    <a th:href="@{/books/view/{id}(id=${book.id})}" th:text="${book.title}"></a>
+                </td>
+                <td th:text="${book.author}"></td>
+                <td th:text="${book.genre != null ? book.genre : '-'}"></td>
+                <td>
+                        <span class="type-icons">
+                            <img th:if="${book.type.name() == 'PAPER'}" src="/icons/type/icon-type-paper.png" alt="Бумажная" width="18" height="18">
+                            <img th:if="${book.type.name() == 'ELECTRONIC'}" src="/icons/type/icon-type-electronic.png" alt="Электронная" width="18" height="18">
+                            <img th:if="${book.type.name() == 'AUDIO'}" src="/icons/type/icon-type-audio.png" alt="Аудиокнига" width="18" height="18">
+                            <span th:text="${book.type.displayName}"></span>
+                        </span>
+                </td>
+                <td th:text="${book.pageCount != null ? book.pageCount : '-'}"></td>
+                <td class="actions">
+                    <a th:href="@{/books/edit/{id}(id=${book.id})}" class="action-link" title="Редактировать">
+                        <img src="/icons/action/icon-edit-pencil.png" alt="Редактировать">
+                    </a>
+                    <a th:href="@{/books/delete/{id}(id=${book.id})}" class="action-link" title="Удалить" onclick="return confirm('Удалить книгу?')">
+                        <img src="/icons/action/icon-delete-bin.png" alt="Удалить">
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Состояние "нет непрочитанных книг" -->
+    <div th:if="${#lists.isEmpty(unreadBooks)}" class="empty-state">
+        <img src="/icons/status/icon-status-read.png" alt="Все прочитано">
+        <p>Поздравляем! У вас нет непрочитанных книг</p>
+        <a href="/books/add" style="margin-top: 16px;">+ Добавить книгу</a>
+    </div>
+
+    <!-- Блок экспорта/импорта - в самом низу страницы -->
+    <div class="form-card" style="margin-top: 48px; padding: 28px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <span class="section-title" style="font-size: 18px;">Управление коллекцией</span>
+        </div>
+
+        <!-- Экспорт -->
+        <div style="margin-bottom: 28px;">
+            <div style="text-align: center; margin-bottom: 16px;">
+                <span style="font-weight: 500; color: #3E2E22;">Экспорт книг</span>
+            </div>
+            <div class="stats-row" style="justify-content: center; gap: 20px; margin: 0;">
+                <a href="/export/books" class="btn-primary" style="padding: 10px 24px;">
+                    <img src="/icons/action/icon-export.png" alt="JSON" style="width: 18px; height: 18px;">
+                    <span>JSON</span>
+                </a>
+                <a href="/export/books/csv" class="btn-primary" style="padding: 10px 24px;">
+                    <img src="/icons/action/icon-export.png" alt="CSV" style="width: 18px; height: 18px;">
+                    <span>CSV</span>
+                </a>
+                <a href="/export/books/excel" class="btn-primary" style="padding: 10px 24px;">
+                    <img src="/icons/action/icon-export.png" alt="Excel" style="width: 18px; height: 18px;">
+                    <span>Excel</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Разделитель -->
+        <div style="height: 1px; background: #E8DDD0; margin: 20px 0;"></div>
+
+        <!-- Импорт -->
+        <div>
+            <div style="text-align: center; margin-bottom: 16px;">
+                <span style="font-weight: 500; color: #3E2E22;">Импорт книг</span>
+            </div>
+            <div class="stats-row" style="justify-content: center; gap: 20px; margin: 0;">
+                <form th:action="@{/import/books}" method="post" enctype="multipart/form-data" style="display: inline-block;">
+                    <label class="btn-primary" style="cursor: pointer; padding: 10px 24px;">
+                        <img src="/icons/action/icon-import.png" alt="JSON" style="width: 18px; height: 18px;">
+                        <span>JSON</span>
+                        <input type="file" name="file" accept=".json" style="display: none;" onchange="this.form.submit()">
+                    </label>
+                </form>
+
+                <form th:action="@{/import/books}" method="post" enctype="multipart/form-data" style="display: inline-block;">
+                    <label class="btn-primary" style="cursor: pointer; padding: 10px 24px;">
+                        <img src="/icons/action/icon-import.png" alt="CSV" style="width: 18px; height: 18px;">
+                        <span>CSV</span>
+                        <input type="file" name="file" accept=".csv" style="display: none;" onchange="this.form.submit()">
+                    </label>
+                </form>
+
+                <form th:action="@{/import/books}" method="post" enctype="multipart/form-data" style="display: inline-block;">
+                    <label class="btn-primary" style="cursor: pointer; padding: 10px 24px;">
+                        <img src="/icons/action/icon-import.png" alt="Excel" style="width: 18px; height: 18px;">
+                        <span>Excel</span>
+                        <input type="file" name="file" accept=".xlsx,.xls" style="display: none;" onchange="this.form.submit()">
+                    </label>
+                </form>
+            </div>
+            <p class="help-text" style="text-align: center; margin-top: 16px; color: #7A6A5A;">
+                Экспорт сохраняет все книги в файл. Импорт добавляет новые книги (дубликаты пропускаются)
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

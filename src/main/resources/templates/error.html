@@ -1,0 +1,37 @@
+<!--
+  ============================================================================
+  FILE: error.html
+  DESCRIPTION: Страница отображения ошибок приложения
+  FEATURES: Отображение HTTP статуса и сообщения об ошибке
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div class="container error-container">
+    <div class="form-card text-center">
+        <div class="error-icon">
+            <img src="/icons/alerts/icon-error-cross.png" alt="Ошибка">
+        </div>
+        <div class="error-code" th:text="${status != null ? status : 500}">500</div>
+        <h1>Произошла ошибка</h1>
+        <div class="error-message error-message-centered" th:text="${error}">Неизвестная ошибка</div>
+        <p class="text-muted">Пожалуйста, попробуйте позже или вернитесь на главную страницу.</p>
+        <div class="error-actions">
+            <a href="/" class="btn-primary btn-primary-inline">
+                <img src="/icons/action/icon-back-arrow.png" alt="Назад"> Вернуться на главную
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

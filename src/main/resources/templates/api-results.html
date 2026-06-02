@@ -1,0 +1,127 @@
+<!--
+  ============================================================================
+  FILE: api-results.html
+  DESCRIPTION: Страница отображения результатов поиска из внешних API
+  FEATURES: Таблица с книгами из Google Books или Open Library, возможность выбора
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска API - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- Верхняя панель навигации с кнопкой возврата -->
+<div class="top-bar">
+    <a href="/books" class="back-link">
+        <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+        <span>Назад к книгам</span>
+    </a>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container">
+    <h1><img src="/icons/search/icon-search-magnifier.png" alt="Поиск"> Результаты поиска: <span th:text="${api}"></span></h1>
+
+    <!-- Блок отображения ошибок API -->
+    <div th:if="${error}" class="error-message">
+        <img src="/icons/alerts/icon-error-cross.png" alt="Ошибка">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:unless="${error}">
+        <!-- Заголовок с количеством найденных книг -->
+        <div class="results-header">
+            <div class="result-count">
+                Найдено книг: <strong th:text="${results.size()}">0</strong>
+                <span th:if="${results.size() > 0}" class="result-stats">
+                    (с обложками: <span th:text="${#lists.size(results.?[coverUrl != null])}"></span>)
+                </span>
+            </div>
+        </div>
+
+        <!-- Состояние "нет результатов" -->
+        <div th:if="${results.empty}" class="empty-state">
+            <img src="/icons/misc/icon-shelf-empty.png" alt="Не найдено">
+            <p>Книги не найдены. Попробуйте изменить поисковый запрос.</p>
+        </div>
+
+        <!-- Таблица с результатами поиска -->
+        <div th:unless="${results.empty}" class="books-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Обложка</th>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Жанр</th>
+                    <th>Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="book : ${results}">
+                    <!-- Колонка с обложкой книги -->
+                    <td class="book-cover-cell">
+                        <div th:if="${book.coverUrl != null and book.coverUrl != ''}">
+                            <img th:src="${book.coverUrl}"
+                                 alt="Обложка"
+                                 class="book-cover-img"
+                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'book-cover-placeholder\'><img src=\'/icons/misc/icon-cover-placeholder.png\' alt=\'Нет обложки\'></div>'">
+                        </div>
+                        <div th:unless="${book.coverUrl != null and book.coverUrl != ''}" class="book-cover-placeholder">
+                            <img src="/icons/misc/icon-cover-placeholder.png" alt="Нет обложки">
+                        </div>
+                    </td>
+                    <!-- Колонка с названием и описанием -->
+                    <td>
+                        <div class="book-title-api" th:text="${book.title}"></div>
+                        <div class="book-description-api" th:if="${book.description}"
+                             th:text="${#strings.abbreviate(book.description, 120)}"></div>
+                        <div class="book-meta-api" th:if="${book.pageCount != null and book.pageCount > 0}">
+                                <span>
+                                    <img src="/icons/metrics/icon-metric-pages.png" alt="Страниц">
+                                    <span th:text="${book.pageCount} + ' стр.'"></span>
+                                </span>
+                            <span th:if="${book.isbn != null}">
+                                    <img src="/icons/action/icon-scan-barcode.png" alt="ISBN">
+                                    <span th:text="${book.isbn}"></span>
+                                </span>
+                        </div>
+                    </td>
+                    <td th:text="${book.author}"></td>
+                    <td th:text="${book.genre != null ? book.genre : '—'}"></td>
+                    <!-- Колонка с действиями: кнопка выбора книги -->
+                    <td class="api-result-actions">
+                        <form th:action="@{/books/add-from-api}" method="post" class="api-action-form">
+                            <input type="hidden" name="title" th:value="${book.title}">
+                            <input type="hidden" name="author" th:value="${book.author}">
+                            <input type="hidden" name="genre" th:value="${book.genre}">
+                            <input type="hidden" name="isbn" th:value="${book.isbn}">
+                            <input type="hidden" name="description" th:value="${book.description}">
+                            <input type="hidden" name="pageCount" th:value="${book.pageCount}">
+                            <input type="hidden" name="coverUrl" th:value="${book.coverUrl}">
+                            <button type="submit" class="select-btn">
+                                <img src="/icons/action/icon-book-add.png" alt="Выбрать"> Выбрать
+                            </button>
+                        </form>
+                        <a th:if="${book.isbn != null}"
+                           th:href="@{/scan-isbn}"
+                           class="icon-btn api-action-icon"
+                           title="Поискать по ISBN">
+                            <img src="/icons/action/icon-scan-barcode.png" alt="ISBN">
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

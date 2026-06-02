@@ -1,0 +1,81 @@
+<!--
+  ============================================================================
+  FILE: search.html
+  DESCRIPTION: Страница расширенного поиска книг в локальной библиотеке
+  FEATURES: Поиск по названию, автору, жанру, статусу, диапазону рейтинга
+  DEPENDENCIES: styles.css
+  ============================================================================
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск книг - Bookshelf</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- Хлебные крошки / Навигация -->
+<div class="top-bar">
+    <a href="/books" class="back-link">
+        <img src="/icons/action/icon-back-arrow.png" alt="Назад">
+        <span>Назад к книгам</span>
+    </a>
+</div>
+
+<!-- Основной контейнер -->
+<div class="container" style="max-width: 800px;">
+    <div class="page-header" style="margin-bottom: 20px;">
+        <h1><img src="/icons/search/icon-search-advanced.png" alt="Поиск"> Расширенный поиск книг</h1>
+    </div>
+
+    <!-- Карточка формы поиска -->
+    <div class="form-card">
+        <form th:action="@{/search/advanced}" method="get">
+            <!-- Поле: Название -->
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" name="title" placeholder="Часть названия...">
+            </div>
+
+            <!-- Поле: Автор -->
+            <div class="form-group">
+                <label>Автор</label>
+                <input type="text" name="author" placeholder="Имя автора...">
+            </div>
+
+            <!-- Строка: Жанр и Статус -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Жанр</label>
+                    <input type="text" name="genre" placeholder="Жанр...">
+                </div>
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select name="status">
+                        <option value="">Любой</option>
+                        <option th:each="status : ${statuses}" th:value="${status}" th:text="${status.displayName}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Строка: Рейтинг от и до -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Рейтинг от</label>
+                    <input type="number" name="minRating" min="1" max="5" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>Рейтинг до</label>
+                    <input type="number" name="maxRating" min="1" max="5" placeholder="5">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-search"><img src="/icons/search/icon-search-magnifier.png" alt="Поиск"> Искать в библиотеке</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
