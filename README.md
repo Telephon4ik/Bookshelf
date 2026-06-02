@@ -1,8 +1,10 @@
+
 # Bookshelf - Личная библиотека для управления книгами
 
-<img width="95" height="17" alt="Spring Boot" src="https://github.com/user-attachments/assets/6836eb00-0f27-46bf-9c80-1ed95fc36c3f" />
-<img width="48" height="17" alt="Java" src="https://github.com/user-attachments/assets/78c4f68a-b6fe-45e8-99b9-46e870f2994c" />
-<img width="72" height="17" alt="H2 Database" src="https://github.com/user-attachments/assets/8d4c8a8e-5a03-4222-888e-51e0b9650ed2" />
+<img width="95" height="17" alt="Spring Boot" src="https://github.com/user-attachments/assets/e55e2d75-a74a-4ab5-95f6-9deda632c655" />
+<img width="48" height="17" alt="Java" src="https://github.com/user-attachments/assets/355fd0bd-d98b-4c27-9740-d8d74c956a81" />
+<img width="72" height="17" alt="H2 Database" src="https://github.com/user-attachments/assets/682b88d0-fc2e-4119-ba0e-94dabc2005c3" />
+
 
 **Bookshelf** — веб-приложение управления личной библиотекой. Добавляйте книги вручную, сканируйте ISBN через камеру, находите книги через Google Books API и Open Library, отслеживайте статистику чтения и организуйте книги с помощью тегов и виртуальных полок.
 
@@ -46,8 +48,7 @@
 
 ### Диаграмма текущего процесса
 
-<img width="441" height="491" alt="Диаграмма текущего процесса" src="https://github.com/user-attachments/assets/477ec847-3e87-441e-ac1c-c7d23bde6e6c" />
-
+<img width="441" height="491" alt="Диаграмма текущего процесса" src="https://github.com/user-attachments/assets/44265f21-2392-454b-b19e-7912b3fb7c2b" />
 ---
 
 ## Обзор существующих решений
@@ -99,8 +100,7 @@
 
 ### Схема взаимодействия компонентов
 
-<img width="792" height="482" alt="Container Diagram" src="https://github.com/user-attachments/assets/f7efc69f-26f1-4cd3-9702-80948727b3d2" />
-
+<img width="792" height="482" alt="Container Diagram" src="https://github.com/user-attachments/assets/9978d44a-d171-4169-a945-e7486f3a65f0" />
 
 ---
 
@@ -108,11 +108,11 @@
 
 ### Схема базы данных
 
-<img width="503" height="221" alt="ERD" src="https://github.com/user-attachments/assets/e063f0f9-eb63-4090-b93e-644565694f96" />
+<img width="503" height="221" alt="ERD" src="https://github.com/user-attachments/assets/f7bbf98f-dd7f-41dd-bee1-3f34fdb02597" />
 
 ### Алгоритм работы: Поиск книги по ISBN
 
-<img width="722" height="822" alt="Sequence Diagram" src="https://github.com/user-attachments/assets/0c5f7184-bbe5-41fa-b118-b938a4893e89" />
+<img width="722" height="822" alt="Sequence Diagram" src="https://github.com/user-attachments/assets/70033061-0075-460a-a5a7-7aced49bcb4f" />
 
 ### Технические характеристики
 
@@ -142,57 +142,60 @@
 
 ### Главная страница
 
-<img width="1365" height="767" alt="Main" src="https://github.com/user-attachments/assets/959e8c8c-571e-40dc-98b9-85e6c7ee7171" />
+<img width="1365" height="767" alt="Main" src="https://github.com/user-attachments/assets/8cb741b6-376f-4b40-ba37-421921cfe436" />
 
 ### Страница книг
 
-<img width="1365" height="767" alt="Books" src="https://github.com/user-attachments/assets/eb579a67-c8fe-487f-af88-9d8ed31feba7" />
+<img width="1365" height="767" alt="Books" src="https://github.com/user-attachments/assets/86d664fd-ee76-4684-b030-e8aa09444df7" />
+
+### Страница фильтра
+
+<img width="1365" height="767" alt="Фильтр" src="https://github.com/user-attachments/assets/924de6fb-72cf-46f8-aa81-16e2af957876" />
 
 ### Страница полок
 
-<img width="1365" height="767" alt="Полки" src="https://github.com/user-attachments/assets/d7cb8fb2-c440-4913-80dc-850a2842deaf" />
+<img width="1365" height="767" alt="Полки" src="https://github.com/user-attachments/assets/d6dbe7ca-50b5-4336-a936-6da4069f9076" />
 
 ### Страница полки
 
-<img width="1365" height="767" alt="Полка" src="https://github.com/user-attachments/assets/9cbff64c-1870-4880-b1d4-a05fd5d5e7fe" />
+<img width="1365" height="767" alt="Полка" src="https://github.com/user-attachments/assets/95790597-6e2a-4788-9b63-a6bc57555ae2" />
 
 ### Страница статистики
 
-<img width="1364" height="1344" alt="stat" src="https://github.com/user-attachments/assets/f3182b14-4ee7-4245-bfb2-4a751cf6fc26" />
+<img width="1364" height="1344" alt="stat" src="https://github.com/user-attachments/assets/7feea9c3-64de-4f62-827c-92ade83a6018" />
 
 ### Страница отчёта
 
-<img width="1348" height="1132" alt="ot" src="https://github.com/user-attachments/assets/9f84ebb9-c599-4110-87f8-ca96b218ca4c" />
+<img width="1348" height="1132" alt="ot" src="https://github.com/user-attachments/assets/2fb8a595-5205-405b-a425-c3c4c8b49802" />
 
 ### Страница добавления книги
 
-<img width="1346" height="1052" alt="add" src="https://github.com/user-attachments/assets/56247413-9adf-40d5-b9d9-5f57b1c10371" />
+<img width="1346" height="1052" alt="add" src="https://github.com/user-attachments/assets/58ea9810-04a7-4305-b90e-1da8d01f7fd6" />
 
 ### Страница редактирования книги
 
-<img width="1364" height="960" alt="editBooks" src="https://github.com/user-attachments/assets/7b00bdd9-7771-4918-84c0-f007ea8034da" />
+<img width="1364" height="960" alt="editBooks" src="https://github.com/user-attachments/assets/5dd5144b-5781-49ed-b468-3545ae55f079" />
 
 ### Страница просмотра книги
 
-<img width="1365" height="767" alt="BookView" src="https://github.com/user-attachments/assets/68700f39-dea6-4834-85ed-2a188c9dd772" />
+<img width="1365" height="767" alt="BookView" src="https://github.com/user-attachments/assets/06cecb0b-ea07-434d-bc8a-6b5f7feb722c" />
 
 ### Страница поиска через ISBN
 
-<img width="1350" height="1020" alt="ISBN" src="https://github.com/user-attachments/assets/b1a71202-5282-4ac0-b8d4-412799ca8f23" />
+<img width="1350" height="1020" alt="ISDN" src="https://github.com/user-attachments/assets/945d0a47-7f31-4de0-9fd1-46c6fce18b67" />
 
 ### Страница поиска через Google Books
 
-<img width="1365" height="767" alt="GoogleAPI" src="https://github.com/user-attachments/assets/fc2e20b6-6072-4875-bcbb-eec17b83590d" />
+<img width="1365" height="767" alt="GoogleAPI" src="https://github.com/user-attachments/assets/4e920c6e-fe79-440e-949e-0439cd3cf60a" />
 
 ### Страница поиска через Open Library
 
-<img width="1365" height="767" alt="OPAPI" src="https://github.com/user-attachments/assets/0cd6a969-61f5-4309-919c-0c922b741b52" />
+<img width="1365" height="767" alt="OPAPI" src="https://github.com/user-attachments/assets/ed8dd438-3497-4760-86ca-c845daa9e839" />
 
 ### Страница результатов поиска по API
 
-<img width="1365" height="767" alt="APIResult" src="https://github.com/user-attachments/assets/7ace38ab-86f2-4c48-82ba-9b49e07b1826" />
+<img width="1365" height="767" alt="APIResult" src="https://github.com/user-attachments/assets/4f66f53f-a7e7-47be-ac18-a8a65ac71640" />
 
 ### Странциа ошибки
 
-<img width="1365" height="767" alt="Error" src="https://github.com/user-attachments/assets/42eb56b3-4e36-4edb-be7c-ccb16ce81e09" />
-
+<img width="1365" height="767" alt="Error" src="https://github.com/user-attachments/assets/be5fee84-61a4-4ab9-9080-a24150314568" />
